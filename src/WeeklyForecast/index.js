@@ -8,7 +8,7 @@ class WeeklyForecast extends Component {
         const listItems = items.map(item =>
         {
             return (
-                <div key={item.dt} className="col-md-1">
+                <div onClick={this.props.onDayClick} key={item.dt} className="col-md-1">
                     <div className="row">
                         <div className="fc-day col-md-12"> {this.props.convert_unix_to_date(item.dt)} </div>
                         <div className="col-md-12"> <img  src={ this.props.icon_address + item.weather[0].icon + ".png"} alt={item.weather[0].description} /> </div>
