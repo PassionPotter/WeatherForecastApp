@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import CurrentWeather from "./CurrentWeather";
 import WeeklyForecast from "./WeeklyForecast";
-import HourlyGraph from "./HourlyGraph";
 
 class App extends Component {
 
@@ -54,9 +53,6 @@ class App extends Component {
             }
         })
 
-        // console.log("======= Printing Data by Day List =======");
-        // console.log(fc_data_by_date);
-        // console.log(fc_date);
         return {fc_data_by_date: fc_data_by_date, fc_dates: fc_dates};
     }
 
@@ -66,11 +62,6 @@ class App extends Component {
         const weather = await (await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&appid=${this.appid}&units=metric`)).json()
         const weather_forecast = await (await fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${this.appid}`)).json()
 
-        console.log("======= Loging Current Weather =========");
-        console.log(weather);
-        console.log("======= Loging Forecast =========");
-        console.log(weather_forecast);
-
         let processed_data = this.process_forecast_data(weather_forecast.list)
 
         this.setState({current_weather: weather.current,
@@ -78,7 +69,6 @@ class App extends Component {
                             forecast_weather: weather_forecast,
                             sorted_forecast_data:processed_data.fc_data_by_date,
                             forecast_dates: processed_data.fc_dates,
-                            current_forecast_data: processed_data.fc_data_by_date[processed_data.fc_dates[0]],
                             showed_temperature: weather.current.temp});
     }
 
@@ -98,12 +88,6 @@ class App extends Component {
         this.setState({showed_temperature: fahrenheit});
     }
 
-    get_day_name = (date, abbreviation=true) => {
-        let full_days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        return abbreviation === false ? full_days[date.getDay()] : days[date.getDay()];
-    }
-
     convert_unix_to_date = (unix_timestamp, abbreviation=true) => {
         let date = new Date(unix_timestamp * 1000);
         let full_days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -111,17 +95,12 @@ class App extends Component {
         return abbreviation === false ? full_days[date.getDay()] : days[date.getDay()];
     }
 
-    day_handle_click = (value) => {
-        console.log("====== Day Clicked ======");
-        console.log(value);
-    }
-
     render() {
         const {current_weather,
             daily_weather,
             showed_temperature,
-            current_forecast_data,
-            forecast_dates} = this.state;
+            forecast_dates,
+            sorted_forecast_data} = this.state;
 
         if(current_weather.temp) {
             return (
@@ -139,10 +118,8 @@ class App extends Component {
                                     icon_address={this.icon_address}
                                     convert_unix_to_date={this.convert_unix_to_date}
                                     forecast_dates={forecast_dates}
-                                    onDayClick={this.day_handle_click}
+                                    sorted_forecast_data={sorted_forecast_data}
                     />
-
-                    {/*<HourlyGraph current_data={current_forecast_data} />*/}
 
                 </div>
 

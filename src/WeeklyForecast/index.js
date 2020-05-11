@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Link, Route} from "react-router-dom";
 import "./WeeklyForecast.css";
+import HourlyGraph from "../HourlyGraph";
 
 class WeeklyForecast extends Component {
 
@@ -35,7 +36,8 @@ class WeeklyForecast extends Component {
                     {listItems}
 
                     <Route path={`/:date`} render={
-                        () => ( <div>Hi</div>)
+                        ({match}) => ( <HourlyGraph
+                                current_data={this.props.sorted_forecast_data[match.params.date]} /> )
                     } />
                 </BrowserRouter>
             </div>

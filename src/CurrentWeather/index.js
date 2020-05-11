@@ -14,8 +14,6 @@ class CurrentWeather extends Component {
 
     render() {
         const current_weather = this.props.current_weather;
-        console.log("====== In Current Weather Component ========")
-        console.log(current_weather);
         return (
             <div className="row">
                 <div className="col-md-4">
@@ -27,12 +25,15 @@ class CurrentWeather extends Component {
                         <div className="col-md-3">
                             <h1 className="cw-temp">{ parseFloat(this.props.showed_temperature).toFixed(0) }</h1>
                         </div>
-                        <div className="col-md-9">
+                        <div className="col-md-3">
                                     <span>
                                         <a href="#" onClick={this.props.show_in_celsius} > &#176;C </a>
                                         |
                                         <a href="#" onClick={this.props.show_in_fahrenheit} > &#176;F </a>
                                     </span>
+                        </div>
+                        <div className="col-md-6">
+                            Click On Any Day To Show Graph
                         </div>
                     </div>
 
