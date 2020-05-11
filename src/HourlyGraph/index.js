@@ -16,7 +16,8 @@ class HourlyGraph extends Component{
     }
 
     getChartData = canvas => {
-        const data = this.state.data
+        // const data = this.state.data
+        const data = this.props.current_data
         if(data.datasets){
             let colors = ["rgba(245, 194, 66, 0.75)"];
             data.labels = ["1", "2", "3", "4", "5"];
@@ -32,9 +33,11 @@ class HourlyGraph extends Component{
     }
 
     render() {
+        // console.log("========= Current forecast data ===========");
+        // console.log(this.props.current_data);
+        // return <div></div>
         return(
             <div style={{position: "relative", width:600, height: 500}}>
-                <h3>Chart Samples</h3>
                 <Line
                     options={{
                         responsive: true,
@@ -51,7 +54,7 @@ class HourlyGraph extends Component{
                             }]
                         }
                     }}
-                    data={this.getChartData}
+                    data={this.props.current_data}
                 />
             </div>
         );

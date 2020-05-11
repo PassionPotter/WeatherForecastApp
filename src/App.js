@@ -17,6 +17,7 @@ class App extends Component {
             daily_weather: [],
             forecast_weather: {},
             sorted_forecast_data: {},
+            forecast_dates: [],
             current_forecast_data:{
                 labels : [],
                 datasets: [{}]
@@ -26,18 +27,14 @@ class App extends Component {
     }
 
     process_forecast_data = (list) => {
-        let fc_data_by_day = {};
-        // {
-        //     labels : [],
-        //         datasets: [{}]
-        // }
+        let fc_data_by_date = {};
+        let fc_dates = [];
         list.map(item => {
             let date_arr = item.dt_txt.split(" ");
             let date = date_arr[0];
             // Prepare data for line graph
-            if (date in fc_data_by_day){
-                let temp_obj = fc_data_by_day[date];
-                // temp_obj.push(item.main.temp);
+            if (date in fc_data_by_date){
+                let temp_obj = fc_data_by_date[date];
                 let labels = temp_obj.labels;
                 labels.push(item.dt_txt);
                 let data = temp_obj.datasets[0].data;
@@ -46,18 +43,21 @@ class App extends Component {
                 let obj = {
                             labels : [item.dt_txt],
                             datasets: [{
-                                label: "Forecast Data",
+                                label: "Forecast",
                                 colors: "rgba(245, 194, 66, 0.75)",
+                                backgroundColor: "rgba(245, 194, 66, 0.75)",
                                 data: [item.main.temp]
                             }]
                     }
-                // fc_data_by_day[date] = [item.main.temp];
-                fc_data_by_day[date] = obj;
+                fc_data_by_date[date] = obj;
+                fc_dates.push(date)
             }
         })
 
-        // console.log("======= Printing Data by Day Lis =======");
-        // console.log(fc_data_by_day)
+        // console.log("======= Printing Data by Day List =======");
+        // console.log(fc_data_by_date);
+        // console.log(fc_date);
+        return {fc_data_by_date: fc_data_by_date, fc_dates: fc_dates};
     }
 
     async componentDidMount() {
@@ -71,11 +71,14 @@ class App extends Component {
         console.log("======= Loging Forecast =========");
         console.log(weather_forecast);
 
-        this.process_forecast_data(weather_forecast.list)
+        let processed_data = this.process_forecast_data(weather_forecast.list)
 
         this.setState({current_weather: weather.current,
                             daily_weather: weather.daily.slice(0,6),
                             forecast_weather: weather_forecast,
+                            sorted_forecast_data:processed_data.fc_data_by_date,
+                            forecast_dates: processed_data.fc_dates,
+                            current_forecast_data: processed_data.fc_data_by_date[processed_data.fc_dates[0]],
                             showed_temperature: weather.current.temp});
     }
 
@@ -108,31 +111,38 @@ class App extends Component {
         return abbreviation === false ? full_days[date.getDay()] : days[date.getDay()];
     }
 
-    day_handle_click = () => {
+    day_handle_click = (value) => {
         console.log("====== Day Clicked ======");
+        console.log(value);
     }
 
     render() {
-        const {current_weather, daily_weather, showed_temperature} = this.state;
+        const {current_weather,
+            daily_weather,
+            showed_temperature,
+            current_forecast_data,
+            forecast_dates} = this.state;
+
         if(current_weather.temp) {
             return (
                 <div className="container">
-                <CurrentWeather city_name={this.city_name}
-                                convert_unix_to_date={this.convert_unix_to_date}
-                                current_weather={current_weather}
-                                showed_temperature={showed_temperature}
-                                show_in_celsius={this.show_in_celsius}
-                                show_in_fahrenheit={this.show_in_fahrenheit}
-                                icon_address={this.icon_address}
-                />
-
-                <WeeklyForecast daily_weather={daily_weather}
-                                icon_address={this.icon_address}
-                                convert_unix_to_date={this.convert_unix_to_date}
-                                onDayClick={this.day_handle_click}
+                    <CurrentWeather city_name={this.city_name}
+                                    convert_unix_to_date={this.convert_unix_to_date}
+                                    current_weather={current_weather}
+                                    showed_temperature={showed_temperature}
+                                    show_in_celsius={this.show_in_celsius}
+                                    show_in_fahrenheit={this.show_in_fahrenheit}
+                                    icon_address={this.icon_address}
                     />
 
-                    <HourlyGraph />
+                    <WeeklyForecast daily_weather={daily_weather}
+                                    icon_address={this.icon_address}
+                                    convert_unix_to_date={this.convert_unix_to_date}
+                                    forecast_dates={forecast_dates}
+                                    onDayClick={this.day_handle_click}
+                    />
+
+                    {/*<HourlyGraph current_data={current_forecast_data} />*/}
 
                 </div>
 
